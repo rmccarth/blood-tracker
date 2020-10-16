@@ -21,7 +21,7 @@ project = 'HTB Blood Tracker'
 copyright = '2020, slipxeri'
 author = 'slipxeri'
 
-
+master_doc = 'index'
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
