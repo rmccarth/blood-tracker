@@ -1,0 +1,651 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>3. Sourcecode &mdash; HTB Blood Tracker  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="2. QuickStart" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> HTB Blood Tracker
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="parts.html">1. Parts Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">2. QuickStart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Sourcecode</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HTB Blood Tracker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li><span class="section-number">3. </span>Sourcecode</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/code.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="sourcecode">
+<span id="code"></span><h1><span class="section-number">3. </span>Sourcecode<a class="headerlink" href="#sourcecode" title="Permalink to this headline">¶</a></h1>
+<p>We’ll start by covering the AWS Lambda Function and then move onto the Particle Web IDE code. Thats right, leveraging the cloud means we only have to have
+code running in two places for this project!</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kn">import</span> <span class="nn">json</span>
+ <span class="kn">import</span> <span class="nn">requests</span>
+
+ <span class="n">API_TOKEN</span><span class="o">=</span><span class="s2">&quot;MZd27P3S1YaQhWhkpaZ&quot;</span>
+
+ <span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+
+     <span class="n">allMachines</span> <span class="o">=</span> <span class="n">getRequest</span><span class="p">(</span><span class="s2">&quot;/machines/get/all&quot;</span><span class="p">,</span> <span class="n">API_TOKEN</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+     <span class="n">mostRecentMachineID</span> <span class="o">=</span> <span class="n">allMachines</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">allMachines</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+     <span class="k">return</span> <span class="p">{</span>
+         <span class="s1">&#39;statusCode&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+         <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">mostRecentMachineID</span><span class="p">)</span>
+     <span class="p">}</span>
+
+ <span class="k">def</span> <span class="nf">getRequest</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">apitoken</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+     <span class="n">HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="s2">&quot;blood-tracker-api&quot;</span><span class="p">}</span>
+     <span class="n">BASE</span> <span class="o">=</span> <span class="s2">&quot;https://www.hackthebox.eu/api&quot;</span>
+     <span class="k">return</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE</span><span class="si">}{</span><span class="n">url</span><span class="si">}</span><span class="s2">?api_token=</span><span class="si">{</span><span class="n">apitoken</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>The first method “lambda_handler” is an AWS default function that listens for calls to it. We
+can leave the method definition as it is, and adjust the code within it to execute our custom logic.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kn">import</span> <span class="nn">json</span>
+ <span class="kn">import</span> <span class="nn">requests</span>
+
+ <span class="n">API_TOKEN</span><span class="o">=</span><span class="s2">&quot;MZd27P3S1YaQhWhkpaZ&quot;</span>
+
+ <span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+</pre></div>
+</td></tr></table></div>
+<p>The lambda_handler first calls the getRequest function, which essentially just formats our request (note the
+critical HEADER value container a User-Agent string. Without this User-Agent, the HTB API will reject the request.
+The getRequest method returns a response object from the HTB API, taking in the formatting provided by “/machines/get/all” and the API_TOKEN value.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">allMachines</span> <span class="o">=</span> <span class="n">getRequest</span><span class="p">(</span><span class="s2">&quot;/machines/get/all&quot;</span><span class="p">,</span> <span class="n">API_TOKEN</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">getRequest</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">apitoken</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+     <span class="n">HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="s2">&quot;blood-tracker-api&quot;</span><span class="p">}</span>
+     <span class="n">BASE</span> <span class="o">=</span> <span class="s2">&quot;https://www.hackthebox.eu/api&quot;</span>
+     <span class="k">return</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE</span><span class="si">}{</span><span class="n">url</span><span class="si">}</span><span class="s2">?api_token=</span><span class="si">{</span><span class="n">apitoken</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Next, the response from the HTB API is parsed to retrieve the most recently released boxes ‘id’ value.
+Since the HTB API puts the machines/get/all list in cronological format, we can rely on that to simply get the last
+dictionary in the array, and select the ‘id’ value from that dictionary.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">mostRecentMachineID</span> <span class="o">=</span> <span class="n">allMachines</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">allMachines</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+</pre></div>
+</td></tr></table></div>
+<p>Finally, the lambda_handler returns a 200 status code, and formats the mostRecentMachineID as valid JSON with json.dumps().</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="k">return</span> <span class="p">{</span>
+         <span class="s1">&#39;statusCode&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+         <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">mostRecentMachineID</span><span class="p">)</span>
+     <span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<div class="topic">
+<p class="topic-title">Onto the htb_monitor.ino code!</p>
+<p>The following is the full sourcecode. Feel free to copy-and-paste into your Particle Web IDE.
+Scroll to the bottom for a step-by-step walkthrough of how the code works.</p>
+</div>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="cp">#include</span> <span class="cpf">&lt;TM1637Display.h&gt;</span><span class="cp"></span>
+ <span class="cp">#define CLK D2</span><span class="c1">//pins definitions for TM1637 and can be changed to other ports</span>
+ <span class="cp">#define DIO D3</span>
+
+ <span class="n">TM1637Display</span> <span class="n">display</span> <span class="o">=</span> <span class="n">TM1637Display</span><span class="p">(</span><span class="n">CLK</span><span class="p">,</span> <span class="n">DIO</span><span class="p">);</span>
+
+ <span class="kt">int</span> <span class="n">global_boxid</span> <span class="o">=</span> <span class="mi">281</span><span class="p">;</span>
+
+ <span class="kt">void</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
+
+     <span class="n">Particle</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s">&quot;hook-response/release-id&quot;</span><span class="p">,</span> <span class="n">idHandler</span><span class="p">,</span> <span class="n">MY_DEVICES</span><span class="p">);</span>
+     <span class="n">Particle</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s">&quot;hook-response/user-owns&quot;</span><span class="p">,</span> <span class="n">userHandler</span><span class="p">,</span> <span class="n">MY_DEVICES</span><span class="p">);</span>
+     <span class="n">Particle</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s">&quot;hook-response/root-owns&quot;</span><span class="p">,</span> <span class="n">rootHandler</span><span class="p">,</span> <span class="n">MY_DEVICES</span><span class="p">);</span>
+     <span class="n">display</span><span class="p">.</span><span class="n">setBrightness</span><span class="p">(</span><span class="mh">0xff</span><span class="p">);</span>
+ <span class="p">}</span>
+
+ <span class="kt">void</span> <span class="nf">loop</span><span class="p">()</span> <span class="p">{</span>
+
+         <span class="k">if</span> <span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">weekday</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">hour</span><span class="p">()</span> <span class="o">==</span> <span class="mi">7</span><span class="p">)</span> <span class="p">{</span>
+                 <span class="k">if</span> <span class="p">((</span><span class="n">Time</span><span class="p">.</span><span class="n">minute</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">minute</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+                     <span class="n">String</span> <span class="n">getRecentBoxID</span> <span class="o">=</span> <span class="s">&quot;getRecentBoxID&quot;</span><span class="p">;</span>
+                     <span class="n">Particle</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="s">&quot;release-id&quot;</span><span class="p">,</span> <span class="n">getRecentBoxID</span><span class="p">,</span> <span class="n">PRIVATE</span><span class="p">);</span>
+                 <span class="p">}</span>
+             <span class="p">}</span>
+         <span class="p">}</span>
+
+         <span class="n">String</span> <span class="n">boxid</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="n">global_boxid</span><span class="p">);</span>
+         <span class="n">Particle</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="s">&quot;user-owns&quot;</span><span class="p">,</span> <span class="n">boxid</span><span class="p">,</span> <span class="n">PRIVATE</span><span class="p">);</span>
+         <span class="n">delay</span><span class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+         <span class="n">Particle</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="s">&quot;root-owns&quot;</span><span class="p">,</span> <span class="n">boxid</span><span class="p">,</span> <span class="n">PRIVATE</span><span class="p">);</span>
+         <span class="n">delay</span><span class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+
+ <span class="p">}</span>
+
+ <span class="kt">void</span> <span class="nf">idHandler</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">event</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+     <span class="c1">// Handle the integration response</span>
+
+     <span class="n">global_boxid</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="n">data</span><span class="p">).</span><span class="n">toInt</span><span class="p">();</span>
+
+ <span class="p">}</span>
+
+ <span class="kt">void</span> <span class="nf">userHandler</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">event</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+     <span class="c1">// Handle the integration response</span>
+
+     <span class="k">const</span> <span class="kt">uint8_t</span> <span class="n">user</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_C</span> <span class="o">|</span> <span class="n">SEG_D</span> <span class="o">|</span> <span class="n">SEG_E</span> <span class="o">|</span> <span class="n">SEG_F</span><span class="p">,</span>   <span class="c1">// U</span>
+         <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_G</span> <span class="o">|</span> <span class="n">SEG_D</span> <span class="o">|</span> <span class="n">SEG_C</span> <span class="o">|</span> <span class="n">SEG_F</span><span class="p">,</span>   <span class="c1">// S</span>
+         <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_G</span> <span class="o">|</span> <span class="n">SEG_D</span> <span class="o">|</span> <span class="n">SEG_E</span> <span class="o">|</span> <span class="n">SEG_F</span><span class="p">,</span>   <span class="c1">// E</span>
+         <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_F</span> <span class="o">|</span> <span class="n">SEG_E</span>            <span class="c1">// R</span>
+
+     <span class="p">};</span>
+
+     <span class="n">display</span><span class="p">.</span><span class="n">setSegments</span><span class="p">(</span><span class="n">user</span><span class="p">);</span>
+     <span class="n">delay</span><span class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+
+     <span class="kt">int</span> <span class="n">user_count</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="n">data</span><span class="p">).</span><span class="n">toInt</span><span class="p">();</span>
+     <span class="n">display</span><span class="p">.</span><span class="n">showNumberDec</span><span class="p">(</span><span class="n">user_count</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+ <span class="p">}</span>
+
+ <span class="kt">void</span> <span class="nf">rootHandler</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">event</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+     <span class="c1">// Handle the integration response</span>
+
+     <span class="k">const</span> <span class="kt">uint8_t</span> <span class="n">root</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_F</span> <span class="o">|</span> <span class="n">SEG_E</span><span class="p">,</span>                   <span class="c1">// R</span>
+         <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_C</span> <span class="o">|</span> <span class="n">SEG_D</span> <span class="o">|</span> <span class="n">SEG_E</span> <span class="o">|</span> <span class="n">SEG_F</span><span class="p">,</span>   <span class="c1">// O</span>
+         <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_C</span> <span class="o">|</span> <span class="n">SEG_D</span> <span class="o">|</span> <span class="n">SEG_E</span> <span class="o">|</span> <span class="n">SEG_F</span><span class="p">,</span>   <span class="c1">// O</span>
+         <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_C</span>                            <span class="c1">// T</span>
+     <span class="p">};</span>
+
+     <span class="n">display</span><span class="p">.</span><span class="n">setSegments</span><span class="p">(</span><span class="n">root</span><span class="p">);</span>
+     <span class="n">delay</span><span class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+
+     <span class="kt">int</span> <span class="n">root_count</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="n">data</span><span class="p">).</span><span class="n">toInt</span><span class="p">();</span>
+     <span class="n">display</span><span class="p">.</span><span class="n">showNumberDec</span><span class="p">(</span><span class="n">root_count</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+ <span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>The following code block includes the TM1637Display library which we will need to
+control the “clock” display. The nice thing about this library is it allows us to have fine-grained
+control over what exactly is displayed in the various clock “segments” which are labeled SEG_A-G, in clockwise fashion
+and with “SEG_G” being the center bar. Lines 2 and 3 define where our clock is plugged into our Particle Argon breadboard.
+Feel free to have your plugged into a different location. Mine is plugged into the section labeled “D2”.</p>
+<p>Finally, the global_boxid is a global integer value that we will change based on the newly released boxes id value
+which is retrieved from the Lambda/Gateway API function that we created in AWS.</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="cp">#include</span> <span class="cpf">&lt;TM1637Display.h&gt;</span><span class="cp"></span>
+ <span class="cp">#define CLK D2</span><span class="c1">//pins definitions for TM1637 and can be changed to other ports</span>
+ <span class="cp">#define DIO D3</span>
+
+ <span class="n">TM1637Display</span> <span class="n">display</span> <span class="o">=</span> <span class="n">TM1637Display</span><span class="p">(</span><span class="n">CLK</span><span class="p">,</span> <span class="n">DIO</span><span class="p">);</span>
+
+ <span class="kt">int</span> <span class="n">global_boxid</span> <span class="o">=</span> <span class="mi">281</span><span class="p">;</span>
+</pre></div>
+</td></tr></table></div>
+<p>This next “setup” function servers to run code before the main “loop” function of our program.
+This code is run to “bootstrap” the rest of the program. Here we will subscribe to our various
+webhooks that we have setup in Particle Cloud and provide callback functions (2nd arg) for when we
+receive data from the broker(s). See <a class="reference internal" href="quickstart.html#quickstart"><span class="std std-ref">QuickStart</span></a> for a detailed explanantion
+on how to configure the webhooks.</p>
+<p>Finally, we initialize the display to be as bright as possible. Because why would anybody ever
+RGB at half intensity?</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
+
+         <span class="n">Particle</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s">&quot;hook-response/release-id&quot;</span><span class="p">,</span> <span class="n">idHandler</span><span class="p">,</span> <span class="n">MY_DEVICES</span><span class="p">);</span>
+         <span class="n">Particle</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s">&quot;hook-response/user-owns&quot;</span><span class="p">,</span> <span class="n">userHandler</span><span class="p">,</span> <span class="n">MY_DEVICES</span><span class="p">);</span>
+         <span class="n">Particle</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s">&quot;hook-response/root-owns&quot;</span><span class="p">,</span> <span class="n">rootHandler</span><span class="p">,</span> <span class="n">MY_DEVICES</span><span class="p">);</span>
+         <span class="n">display</span><span class="p">.</span><span class="n">setBrightness</span><span class="p">(</span><span class="mh">0xff</span><span class="p">);</span>
+     <span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>The next code block is the main loop of the program. The loop first checks if it is a Saturday at 7:00 or 7:01 pm (UTC default).
+That specific time is when HackTheBox releases new machines. If the time is one of those two possible times,
+our Particle device will publish to the Particle Webhook ‘release-id’. This will trigger the webhook, and since our Particle device
+is subscribed to the webhook in the setup() function, we will be able to retrieve the data.</p>
+<p>The data is handled by setting the callback function idHandler inside the Particle.subscribe function.</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">loop</span><span class="p">()</span> <span class="p">{</span>
+
+         <span class="k">if</span> <span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">weekday</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">hour</span><span class="p">()</span> <span class="o">==</span> <span class="mi">7</span><span class="p">)</span> <span class="p">{</span>
+                 <span class="k">if</span> <span class="p">((</span><span class="n">Time</span><span class="p">.</span><span class="n">minute</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">minute</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+                     <span class="n">String</span> <span class="n">getRecentBoxID</span> <span class="o">=</span> <span class="s">&quot;getRecentBoxID&quot;</span><span class="p">;</span>
+                     <span class="n">Particle</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="s">&quot;release-id&quot;</span><span class="p">,</span> <span class="n">getRecentBoxID</span><span class="p">,</span> <span class="n">PRIVATE</span><span class="p">);</span>
+                 <span class="p">}</span>
+             <span class="p">}</span>
+         <span class="p">}</span>
+
+         <span class="n">String</span> <span class="n">boxid</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="n">global_boxid</span><span class="p">);</span>
+         <span class="n">Particle</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="s">&quot;user-owns&quot;</span><span class="p">,</span> <span class="n">boxid</span><span class="p">,</span> <span class="n">PRIVATE</span><span class="p">);</span>
+         <span class="n">delay</span><span class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+         <span class="n">Particle</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="s">&quot;root-owns&quot;</span><span class="p">,</span> <span class="n">boxid</span><span class="p">,</span> <span class="n">PRIVATE</span><span class="p">);</span>
+         <span class="n">delay</span><span class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+
+ <span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>Our idHandler function looks like this:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">idHandler</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">event</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+     <span class="c1">// Handle the integration response</span>
+
+     <span class="n">global_boxid</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="n">data</span><span class="p">).</span><span class="n">toInt</span><span class="p">();</span>
+
+ <span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>The idHandler function retrieves the data and converts from a char* array into a String and finally from a String into an int.
+I did it this way since the Particle default library contains easy conversions form Strings via the .toInt() function.
+The function finally sets that integer value to our global_boxid which is a global value and can be accessed from any subsequent function.</p>
+<p>In the event that the current time is NOT 7:00 or 7:01pm on a Saturday, the rest of the loop() will execute. This will take the current
+value stored in the global_boxid and pass it to the user-owns and root-owns webhooks in order to execute their respective webhooks (whose callback
+functions are again defined in their subscription definition in setup()).</p>
+<p>The delay(10000) instructions tell the Particle device to pause execution for 10000 milliseconds. This is so that we have enough time to read the values
+that we are going to write to the display.</p>
+<p>The respective callback functions for the user-owns and root-owns webhooks look like this:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">userHandler</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">event</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+         <span class="c1">// Handle the integration response</span>
+
+         <span class="k">const</span> <span class="kt">uint8_t</span> <span class="n">user</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+             <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_C</span> <span class="o">|</span> <span class="n">SEG_D</span> <span class="o">|</span> <span class="n">SEG_E</span> <span class="o">|</span> <span class="n">SEG_F</span><span class="p">,</span>   <span class="c1">// U</span>
+             <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_G</span> <span class="o">|</span> <span class="n">SEG_D</span> <span class="o">|</span> <span class="n">SEG_C</span> <span class="o">|</span> <span class="n">SEG_F</span><span class="p">,</span>   <span class="c1">// S</span>
+             <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_G</span> <span class="o">|</span> <span class="n">SEG_D</span> <span class="o">|</span> <span class="n">SEG_E</span> <span class="o">|</span> <span class="n">SEG_F</span><span class="p">,</span>   <span class="c1">// E</span>
+             <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_F</span> <span class="o">|</span> <span class="n">SEG_E</span>            <span class="c1">// R</span>
+
+         <span class="p">};</span>
+
+         <span class="n">display</span><span class="p">.</span><span class="n">setSegments</span><span class="p">(</span><span class="n">user</span><span class="p">);</span>
+         <span class="n">delay</span><span class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+
+         <span class="kt">int</span> <span class="n">user_count</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="n">data</span><span class="p">).</span><span class="n">toInt</span><span class="p">();</span>
+         <span class="n">display</span><span class="p">.</span><span class="n">showNumberDec</span><span class="p">(</span><span class="n">user_count</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+     <span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>This user-own callback function defines an array of segment values in order to dictate what is written to the display.
+The display has 4 areas to be written to. For each area there are 7 possible segments that can be turned on or off.
+The array defines which segments in each area will be turned on. The segments are defined in clockwise order around the area,
+and the middle bar of the ‘8’ is SEG_G. The top middle bar of the area is SEG_A. The userHandler function takes this user[]
+and passes it to the display.setSegments function, which is provided by the library we imported into the Web IDE. This essentially
+‘lights up’ the display at these segment values. The function then waits 10,000 milliseconds before using the display.showNumberDec
+function to indicate the number of user-owns found from the query generated by the webhook.</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">rootHandler</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">event</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+     <span class="c1">// Handle the integration response</span>
+
+     <span class="k">const</span> <span class="kt">uint8_t</span> <span class="n">root</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_F</span> <span class="o">|</span> <span class="n">SEG_E</span><span class="p">,</span>                   <span class="c1">// R</span>
+         <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_C</span> <span class="o">|</span> <span class="n">SEG_D</span> <span class="o">|</span> <span class="n">SEG_E</span> <span class="o">|</span> <span class="n">SEG_F</span><span class="p">,</span>   <span class="c1">// O</span>
+         <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_C</span> <span class="o">|</span> <span class="n">SEG_D</span> <span class="o">|</span> <span class="n">SEG_E</span> <span class="o">|</span> <span class="n">SEG_F</span><span class="p">,</span>   <span class="c1">// O</span>
+         <span class="n">SEG_A</span> <span class="o">|</span> <span class="n">SEG_B</span> <span class="o">|</span> <span class="n">SEG_C</span>                            <span class="c1">// T</span>
+     <span class="p">};</span>
+
+     <span class="n">display</span><span class="p">.</span><span class="n">setSegments</span><span class="p">(</span><span class="n">root</span><span class="p">);</span>
+     <span class="n">delay</span><span class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+
+     <span class="kt">int</span> <span class="n">root_count</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="n">data</span><span class="p">).</span><span class="n">toInt</span><span class="p">();</span>
+     <span class="n">display</span><span class="p">.</span><span class="n">showNumberDec</span><span class="p">(</span><span class="n">root_count</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+ <span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>The rootHandler function is exactly the same as the userHandler function except it prints “ROO7” to the device and
+then displays the number of root-owns from the query generated by the root-owns webhook in Particle Cloud.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="2. QuickStart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, slipxeri
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

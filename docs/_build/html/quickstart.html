@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>QuickStart &mdash; HTB Blood Tracker  documentation</title>
+  <title>2. QuickStart &mdash; HTB Blood Tracker  documentation</title>
   
 
   
@@ -36,7 +36,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Parts Guide" href="parts.html" /> 
+    <link rel="next" title="3. Sourcecode" href="code.html" />
+    <link rel="prev" title="1. Parts Guide" href="parts.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -82,8 +83,9 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="parts.html">Parts Guide</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parts.html">1. Parts Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">3. Sourcecode</a></li>
 </ul>
 
             
@@ -130,7 +132,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>QuickStart</li>
+      <li><span class="section-number">2. </span>QuickStart</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -150,32 +152,72 @@
            <div itemprop="articleBody">
             
   <div class="section" id="quickstart">
-<span id="id1"></span><h1>QuickStart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
-<dl>
-<dt>AWS Lambda</dt><dd><p>You will need an API to parse the HTB machines list to retrieve the most recently released machine on HTB.
+<span id="id1"></span><h1><span class="section-number">2. </span>QuickStart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<p>Lets get started by cloning the sourcecode repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/rmccarth/blood-tracker.git
+</pre></div>
+</div>
+<div class="topic">
+<p class="topic-title">Setting Up an AWS Lambda Function</p>
+<p>You will need an API to parse the HTB machines list to retrieve the most recently released machine on HTB.
 Thanks to AWS Lambda the whole process is really easy. AWS Lambda lets us set up a function that we can call anytime we want,
 we just have to make sure that it is exposed with an API so that our Particle Cloud queries can reach it.</p>
 <p>You can make your Lambda function look similar to the one I have provided in the sourecode, or take liberties and alter it and make it your own.
 Note the requests folder. This can be downloaded to your local machine with pip:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>pip install requests -t ./
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install requests -t ./
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>And then you can zip the requests module folder along with your lambda_function.py with:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>zip package.zip lambda_function.py requests/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>zip package.zip lambda_function.py requests/
 </pre></div>
-</td></tr></table></div>
+</div>
 <p>In AWS your completed Lambda function will look much like the one in the screenshot below:</p>
-</dd>
-</dl>
+</div>
 <a class="reference internal image-reference" href="_images/lambda.png"><img alt="_images/lambda.png" src="_images/lambda.png" style="width: 600px;" /></a>
-<dl class="simple">
-<dt>AWS API Gateway</dt><dd><p>I setup my AWS API Gateway to point to the lambda function that I created. I set a rate limit of 1 request per second
+<div class="topic">
+<p class="topic-title">Setting Up an AWS API Gateway</p>
+<p>I setup my AWS API Gateway to point to the lambda function that I created. I set a rate limit of 1 request per second
 with a burst of 2 requests per second. I kept this rate limit as I wanted to be sure that throughout the course of the 1 year free
 trial I did not exceed the total number of requests, even by accident. I also generated an API token for my user account
 so that I could be sure that nobody else was able to run the AWS bill up on my behalf. My API Gateway config looked like this:</p>
-</dd>
-</dl>
+<p>The AWS API Gateway gives you a URL to hit with your requests.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl https://jav7kd1ybc.execute-api.us-east-2.amazonaws.com/prod/release-id
+</pre></div>
+</div>
 <a class="reference internal image-reference" href="_images/api-config.png"><img alt="_images/api-config.png" src="_images/api-config.png" style="width: 600px;" /></a>
+<div class="topic">
+<p class="topic-title">Setting Up Particle Webhook for AWS API Gateway</p>
+<p>Now that our API is configured to parse the HTB API, we can configure our
+Particle webhooks to hit both our AWS API as well as the HTB API to query the
+most recently released box and that boxes statistics respectively.</p>
+<p>The first webhook which queries our AWS API is configured by going to ‘integrations’ in the
+Particle Console, and then creating a new integration as such:</p>
+</div>
+<a class="reference internal image-reference" href="_images/aws-webhook.png"><img alt="_images/aws-webhook.png" src="_images/aws-webhook.png" style="width: 600px;" /></a>
+<div class="topic">
+<p class="topic-title">Setting Up Particle user-owns Webhook</p>
+<p>Note that I’ve removed half of my API key for confidentiality, however its vital that if your
+API requires a key, you provide it in the header like I did here. Also note the “{{{id}}}” ‘Moustache’ Response Template.
+This Moustache syntax allows you to select the field out of the JSON response which you would like to capture.
+In our case we will capture the only value passed by our API and use it in our Particle Firmware to
+make further requests against the HTB API for box statistics.</p>
+<p>The next two webhooks we will need to setup are the user-owns webhook, and the root-owns webhook.
+Their format is very similar, but you will note the passing of the HTB API key (which you can find in your HTB profile section)
+directly in the URL of the webhook.</p>
+</div>
+<a class="reference internal image-reference" href="_images/user-webhook.png"><img alt="_images/user-webhook.png" src="_images/user-webhook.png" style="width: 600px;" /></a>
+<div class="topic">
+<p class="topic-title">Setting Up Particle root-owns Webhook</p>
+<p>And lastly the root-owns webhook which is identical to the user-owns webhook except it parses
+for root-owns rather than user-owns:</p>
+</div>
+<a class="reference internal image-reference" href="_images/root-webhook.png"><img alt="_images/root-webhook.png" src="_images/root-webhook.png" style="width: 600px;" /></a>
+<div class="topic">
+<p class="topic-title">Next Steps!</p>
+<p>Now lets get into the code! Fire up your Particle Web IDE, create a new project, and head over to the <a class="reference internal" href="code.html#code"><span class="std std-ref">Sourcecode</span></a> documentation
+for a full explanation of how the code works!</p>
+</div>
 <p><a class="reference internal" href="parts.html#parts"><span class="std std-ref">Parts Guide</span></a></p>
 </div>
 
@@ -187,8 +229,10 @@ so that I could be sure that nobody else was able to run the AWS bill up on my b
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="code.html" class="btn btn-neutral float-right" title="3. Sourcecode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="parts.html" class="btn btn-neutral float-left" title="Parts Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="parts.html" class="btn btn-neutral float-left" title="1. Parts Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

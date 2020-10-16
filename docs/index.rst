@@ -10,9 +10,10 @@ Table of Contents
 ^^^^^^^^^^^^^^^^^
 
 .. toctree::
-   :maxdepth: 2
+   :numbered:
 
    parts
    quickstart
+   code
 
 

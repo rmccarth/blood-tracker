@@ -5,7 +5,7 @@ Parts Guide
 
 .. topic:: Parts List:  
 
-    1) Particle Argon (from IoT Development Kit) - `Purchase Link <https://store.particle.io/products/argon>`_  
+    1) Particle Argon (from IoT Development Kit) - `Purchase <https://store.particle.io/products/argon>`_  
     2) Grove 4-Digit Display (from Grove Starter Kit) - `Purchase Link <https://www.arrow.com/en/products/110060382/seeed-technology-limited?gclid=CjwKCAjw5p_8BRBUEiwAPpJO63v7PVQQAVGwDJeYSdj3RFliR5LXe-QIzGWaskxInSPk9yvzIWQ79xoC4QoQAvD_BwE>`_  
 
 
