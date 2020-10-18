@@ -16,8 +16,8 @@ void setup() {
 
 void loop() {
         
-        if (Time.weekday() == 1) {
-            if (Time.hour() == 7) {
+        if (Time.weekday() == 7) {
+            if (Time.hour() == 19) {
                 if ((Time.minute() == 0) || (Time.minute() == 1)) {
                     String getRecentBoxID = "getRecentBoxID";
                     Particle.publish("release-id", getRecentBoxID, PRIVATE);
@@ -67,6 +67,7 @@ void userHandler(const char *event, const char *data) {
     
     int user_count = String(data).toInt();
     display.showNumberDec(user_count, false, 4, 0);
+    delay(10000);
     
 }
 
@@ -85,5 +86,6 @@ void rootHandler(const char *event, const char *data) {
     
     int root_count = String(data).toInt();
     display.showNumberDec(root_count, false, 4, 0);
+    delay(10000);
     
 }
